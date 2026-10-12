@@ -199,16 +199,11 @@ export async function getData(path: string, auth?: string): Promise<Spec> {
  * @return {(String | undefined)}
  */
 export function getProtocol(url: string): string | undefined {
-  let protocol;
-
   try {
-    protocol = new URL(url).protocol;
-    protocol = protocol.substring(0, protocol.length - 1);
-  } catch (cause) {
-    throw new Error(`Cannot get protocol from ${url}`, { cause });
+    return new URL(url).protocol.slice(0, -1);
+  } catch {
+    return undefined;
   }
-
-  return protocol;
 }
 
 /**
