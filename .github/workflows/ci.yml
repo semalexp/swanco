@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Lint, test & build docs
+    name: Build, lint, test & build docs
     runs-on: ubuntu-latest
 
     steps:

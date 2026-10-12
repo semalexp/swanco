@@ -10,7 +10,11 @@ This project is a small tool, which generates an Angular module from a [Swagger 
 ## Key features
 - Generate complete API module, which contains enums, models and services
 - Generate services only, as a part of another module
-- Generate models only (It can be useful, when you use WebSocket instant XHR requests) 
+- Generate models only (It can be useful, when you use WebSocket instant XHR requests)
+
+## Documentation
+
+For more technical detailes, see [TypoDoc documentation](https://semalexp.github.io/swanco/).
 
 ## Requirements
 The generator requires NodeJS `10.12.0` or later and has a few dependencies:
