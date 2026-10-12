@@ -29,45 +29,46 @@
   ],
   "bin": "dist/cli.js",
   "main": "dist/index.js",
-  "homepage": "https://github.com/semenovap/swanco#readme",
+  "homepage": "https://github.com/semalexp/swanco#readme",
   "bugs": {
-    "url": "https://github.com/semenovap/swanco/issues"
+    "url": "https://github.com/semalexp/swanco/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/semenovap/swanco.git"
+    "url": "https://github.com/semalexp/swanco.git"
   },
   "dependencies": {
-    "commander": "^10.0.0",
-    "handlebars": "^4.7.7",
+    "commander": "^15.0.0",
+    "handlebars": "^4.7.10",
     "lodash.camelcase": "^4.3.0",
     "lodash.groupby": "^4.6.0",
     "lodash.isequal": "^4.5.0",
     "lodash.kebabcase": "^4.1.1",
-    "lodash.orderby": "^4.6.0",
+    "lodash.orderby": "^4.18.0",
     "lodash.uniqby": "^4.7.0",
     "lodash.upperfirst": "^4.3.1"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/lodash.camelcase": "^4.3.7",
-    "@types/lodash.groupby": "^4.6.7",
-    "@types/lodash.isequal": "^4.5.6",
-    "@types/lodash.kebabcase": "^4.1.7",
-    "@types/lodash.orderby": "^4.6.7",
-    "@types/lodash.uniqby": "^4.7.7",
-    "@types/lodash.upperfirst": "^4.3.7",
-    "@types/node": "^18.15.2",
-    "@types/swagger-schema-official": "^2.0.22",
+    "@types/lodash.camelcase": "^4.3.9",
+    "@types/lodash.groupby": "^4.6.9",
+    "@types/lodash.isequal": "^4.5.8",
+    "@types/lodash.kebabcase": "^4.1.9",
+    "@types/lodash.orderby": "^4.6.9",
+    "@types/lodash.uniqby": "^4.7.9",
+    "@types/lodash.upperfirst": "^4.3.9",
+    "@types/node": "^26.6.5",
+    "@types/swagger-schema-official": "^2.0.25",
     "@typescript-eslint/eslint-plugin": "^8.71.1",
     "@typescript-eslint/parser": "^8.71.1",
-    "eslint": "^8.36.0",
+    "eslint": "^10.12.0",
     "jest": "^30.5.2",
     "jest-junit": "^17.0.0",
     "standard-version": "^9.5.0",
     "ts-jest": "^29.0.5",
-    "typedoc": "^0.23.26",
-    "typedoc-plugin-missing-exports": "^1.0.0",
-    "typescript": "^4.9.5"
+    "typedoc": "^0.28.20",
+    "typedoc-plugin-missing-exports": "^4.1.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.1"
   }
 }

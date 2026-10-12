@@ -25,7 +25,7 @@ import {
 
 interface Options {
   input: string;
-  output?: string;
+  output: string;
   skipServices?: boolean;
   skipModule?: boolean;
   auth?: string;
@@ -33,8 +33,7 @@ interface Options {
 }
 
 export = (options: Options) => {
-  options = Object.assign<Options, Options>({
-    input: undefined,
+  options = Object.assign<Partial<Options>, Options>({
     output: 'src/app/api',
     skipServices: false,
     skipModule: false,

@@ -18,7 +18,7 @@ export interface GroupedReferences<T extends File> {
   [template: string]: T[];
 }
 
-interface Type {
+export interface Type {
   name: string;
   isArray: boolean;
 }
@@ -39,7 +39,7 @@ export function getBasicType(schema: BaseSchema): Type {
   if (schema.type === 'array') {
     const items = schema.items;
 
-    if (!Array.isArray(items) && items.type) {
+    if (!Array.isArray(items) && items?.type) {
       schema = items;
       isArray = true;
     }

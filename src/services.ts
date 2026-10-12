@@ -5,7 +5,7 @@
 import camelCase = require('lodash.camelcase');
 import kebabCase = require('lodash.kebabcase');
 import orderBy = require('lodash.orderby');
-import uniqBy = require('lodash.uniqby');
+
 import {
   Operation as SwaggerOperation,
   Parameter as SwaggerParameter,
@@ -29,7 +29,7 @@ import {
   getBasicType,
   getReferenceType,
   GroupedReferences,
-  groupReferences
+  groupReferences, Type
 } from './type';
 import {
   File,
@@ -48,25 +48,25 @@ export interface Service extends Tag, File {
 interface Operation extends Generics {
   name: string;
   summary: string;
-  description: string;
+  description?: string;
   parameters: Parameter[];
   response: Response;
   security: Security;
   method: string;
   url: string;
   accept: string;
-  contentType: string;
+  contentType?: string;
   hasQueryParams: boolean;
   hasFormData: boolean;
   hasNoBody: boolean;
-  deprecated: boolean;
+  deprecated?: boolean;
 }
 
 interface Parameter {
   name: string;
   type: string;
-  description: string;
-  required: boolean;
+  description?: string;
+  required?: boolean;
   reference?: Enum | Model;
   inHeader?: boolean;
   inBody?: boolean;
@@ -78,7 +78,7 @@ interface Parameter {
 
 interface Response {
   type: string;
-  description: string;
+  description?: string;
   isArray: boolean;
   reference?: Enum | Model;
 }
@@ -109,7 +109,7 @@ interface Token {
  * @return {Service}
  */
 export function fetchServices(spec: Spec, config: Config): Service[] {
-  const {paths, tags, securityDefinitions, security} = spec;
+  const {paths, tags, securityDefinitions = {}, security = []} = spec;
 
   return getServices(paths, tags, config, securityDefinitions, security);
 }
@@ -160,7 +160,11 @@ function getServices(
         continue;
       }
 
-      const operation: SwaggerOperation = path[methodName];
+      const operation: Path[keyof Path] = path[methodName as keyof Path];
+
+      if (typeof operation === 'string' || !operation || Array.isArray(operation)) {
+        continue;
+      }
 
       operation.tags = Array.isArray(operation.tags) && operation.tags.length ? operation.tags : ['api'];
       operation.security = operation.security || globalSecurity;
@@ -186,7 +190,7 @@ function getServices(
           }));
         }
 
-        servicesMap.get(currentTag.name).operations.push(getOperation(
+        servicesMap.get(currentTag.name)?.operations.push(getOperation(
           currentTag.name,
           methodName,
           pathName,
@@ -205,13 +209,10 @@ function getServices(
       service.importHttpParams = service.operations.some(operation => operation.hasQueryParams);
 
       const references = service.operations
-        .reduce(
-          (all, op) => all.concat(op.parameters.map(params => params.reference).concat(op.response.reference)),
-          []
-        )
+        .reduce<Array<Model | Enum | undefined>>((all, op) => all.concat(op.parameters.map(params => params.reference).concat(op.response.reference)), [])
         .filter(reference => !!reference);
 
-      service.references = groupReferences(references);
+      service.references = groupReferences<Model | Enum>(references);
     }
   });
 
@@ -245,15 +246,15 @@ function getOperation(
     'desc'
   );
   const response = getResponse(service, name, operation.responses[200] || operation.responses.default);
-  const generics = uniqBy([
-    ...parameters.map(param => param.reference).concat(response.reference)
-      .reduce((all, reference) => {
-        if (reference && 'generics' in reference) {
-          all.push(...reference.generics);
-        }
-        return all;
-      }, [])
-  ], undefined);
+  const generics = [...new Set(parameters
+    .map(param => param.reference)
+    .concat(response.reference)
+    .reduce<string[]>((all, reference) => {
+      if (reference && 'generics' in reference) {
+        all.push(...reference.generics);
+      }
+      return all;
+    }, []))];
 
   return {
     name,
@@ -307,7 +308,7 @@ function getParameter(service: string, operation: string, parameter: SwaggerPara
   let type = basicType.name;
   let isArray = basicType.isArray;
 
-  if ('schema' in parameter) {
+  if ('schema' in parameter && parameter.schema) {
     const refType = getReferenceType(parameter.schema);
     if (refType.name) {
       type = refType.name;
@@ -315,11 +316,11 @@ function getParameter(service: string, operation: string, parameter: SwaggerPara
       reference = findModel(type);
     }
   } else {
-    let enumType: Enum;
+    let enumType: Enum | undefined;
 
     if ('enum' in parameter) {
       enumType = addEnum(service, operation, parameter);
-    } else if ('items' in parameter && !Array.isArray(parameter.items)) {
+    } else if ('items' in parameter && parameter.items && !Array.isArray(parameter.items)) {
       enumType = addEnum(service, operation, parameter.items);
     }
 
@@ -358,14 +359,14 @@ function getParameter(service: string, operation: string, parameter: SwaggerPara
 function getResponse(service: string, operation: string, response: SwaggerResponse | SwaggerReference): Response {
   let type = 'void';
   let description;
-  let reference;
+  let reference: Response['reference'];
   let isArray = false;
 
   if (response) {
-    let refType;
+    let refType: Type | Enum | undefined;
     if ('$ref' in response) {
       refType = getReferenceType(response);
-    } else if ('schema' in response) {
+    } else if ('schema' in response && response.schema) {
       description = response.description;
       refType = getReferenceType(response.schema);
       if (!refType.name) {
@@ -382,7 +383,7 @@ function getResponse(service: string, operation: string, response: SwaggerRespon
     if (refType) {
       type = refType.name;
       isArray = refType.isArray;
-      reference = refType.values ? refType : findModel(type);
+      reference = 'values' in refType ? refType : findModel(type);
     }
   }
 

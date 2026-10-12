@@ -44,7 +44,7 @@ export interface HashMap<T> {
 }
 
 // Register render helpers
-Handlebars.registerHelper('join', (array, sep, options) => array.map(item => options.fn(item)).join(sep));
+Handlebars.registerHelper('join', (array: unknown[], sep, options) => array.map(item => options.fn(item)).join(sep));
 Handlebars.registerHelper('isOne', value => Array.isArray(value) && value.length === 1);
 Handlebars.registerHelper('isBlob', value => value === 'Blob');
 Handlebars.registerHelper('pascalCase', value => pascalCase(value));
@@ -219,22 +219,22 @@ export function getProtocol(url: string): string | undefined {
  *
  * @return {Promise<string>}
  */
-async function getUrl(url: string, auth: string): Promise<string> {
+async function getUrl(url: string, auth?: string): Promise<string> {
   const protocol = getProtocol(url);
   if (!protocol) {
     throw new Error(`Invalid URL: ${url}`);
   }
 
-  const http = await import(protocol);
+  const http: typeof import('http') | typeof import('https') = await import(protocol);
   const request = http.get(url, {auth});
 
   return new Promise((res, rej) => {
     request.on('error', error => rej(error));
     request.on('response', (response: IncomingMessage) => {
       const {statusCode} = response;
-      const contentType = response.headers['content-type'];
+      const contentType = response.headers['content-type'] || '';
 
-      let error: Error;
+      let error: Error | undefined;
       if (statusCode !== 200) {
         error = new Error(`Request Failed. Status Code: ${statusCode}`);
       } else if (!/^application\/json/.test(contentType)) {

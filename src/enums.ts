@@ -12,7 +12,7 @@ import {
 
 export interface Enum extends File {
   values: EnumValues[];
-  description: string;
+  description?: string;
   isArray: boolean;
 }
 

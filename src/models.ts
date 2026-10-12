@@ -36,12 +36,12 @@ export interface Model extends File, Generics {
 interface Type {
   type: string;
   isArray: boolean;
-  hashMap: AdditionalType;
+  hashMap?: AdditionalType;
   reference?: Enum | Model | string;
 }
 
 interface Property extends Type {
-  description: string;
+  description?: string;
   name: string;
   required: boolean;
   example: string;
@@ -80,8 +80,8 @@ export function fetchModels(spec: Spec): Model[] {
     }
 
     models.forEach(model => {
-      const references = [];
-      const extended = [];
+      const references: Array<Enum | Model> = [];
+      const extended: Model[] = [];
 
       model.properties.forEach(property => {
         const {reference} = property;
@@ -103,7 +103,7 @@ export function fetchModels(spec: Spec): Model[] {
         }
       });
 
-      model.extended.forEach(reference => {
+      model.extended?.forEach(reference => {
         if (typeof reference !== 'string') {
           return;
         }
@@ -124,7 +124,7 @@ export function fetchModels(spec: Spec): Model[] {
 
     models.forEach(model => {
       model.generics.push(...getAllGenerics(model));
-      model.generics = uniqBy(model.generics, undefined);
+      model.generics = [...new Set(model.generics)];
     });
   }
 
@@ -159,7 +159,7 @@ function getModel(name: string, definition: Schema): Model {
   const file = `${kebabCase(name)}.model`;
   const properties: Property[] = [];
   const generics = [];
-  const extended = [];
+  const extended: string[] = [];
 
   if (!definition.properties && Array.isArray(definition.allOf)) {
     definition.allOf.forEach(schema => {
@@ -215,7 +215,7 @@ function getType(prefix: string, name: string, schema: Schema): AdditionalType {
 
   let type = basicType.name;
   let isArray = basicType.isArray;
-  let hashMap: AdditionalType;
+  let hashMap: AdditionalType | undefined;
   let reference;
 
   if (refType.name) {
@@ -263,6 +263,6 @@ function getAllGenerics(model: Model, skip: string[] = []): string[] {
   }
 
   skip.push(model.name);
-  const refModels = (model.references.model || []) as Model[];
+  const refModels = (model.references?.model || []) as Model[];
   return model.generics.concat(...refModels.map(refModel => getAllGenerics(refModel, skip)));
 }
