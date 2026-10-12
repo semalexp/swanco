@@ -6,7 +6,8 @@
     "outDir": "./dist",
     "declaration": true,
     "types": [
-      "node"
+      "node",
+      "jest"
     ]
   },
   "include": [

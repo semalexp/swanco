@@ -453,6 +453,7 @@ describe('models', () => {
   });
 
   it('should be part of some other models', () => {
+    spec.definitions = spec.definitions || {};
     spec.definitions.Foo = {
       allOf: [
         {
@@ -504,6 +505,7 @@ describe('models', () => {
   });
 
   it('should have additional properties', () => {
+    spec.definitions = spec.definitions || {};
     spec.definitions.Foo = {
       properties: {
         foo: {
@@ -576,11 +578,15 @@ describe('models', () => {
   });
 
   it('cannot find reference model', () => {
+    spec.definitions = spec.definitions || {};
+    spec.definitions.Pet = spec.definitions.Pet || {};
+    spec.definitions.Pet.properties = spec.definitions.Pet.properties || {};
     spec.definitions.Pet.properties.category.$ref = '#/definitions/Foo';
-    expect(() => fetchModels(spec)).toThrowError();
+    expect(() => fetchModels(spec)).toThrow();
   });
 
   it('cannot find extended reference model', () => {
+    spec.definitions = spec.definitions || {};
     spec.definitions.Foo = {
       allOf: [
         {
@@ -588,7 +594,7 @@ describe('models', () => {
         }
       ]
     };
-    expect(() => fetchModels(spec)).toThrowError();
+    expect(() => fetchModels(spec)).toThrow();
   });
 
 });

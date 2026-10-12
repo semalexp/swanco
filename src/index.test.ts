@@ -9,11 +9,11 @@ describe('index', () => {
   });
 
   it('should throw exception about invalid input', async () => {
-    await expect(swanco({input: 'foo'})).rejects.toThrowError();
+    await expect(swanco({input: 'foo'})).rejects.toThrow();
   });
 
   it('should throw exception about invalid data', async () => {
-    await expect(swanco({input: 'package.json'})).rejects.toThrowError();
+    await expect(swanco({input: 'package.json'})).rejects.toThrow();
   });
 
   it('should hide report', async () => {
@@ -25,7 +25,7 @@ describe('index', () => {
       hideReport: true
     });
 
-    expect(console.table).not.toBeCalled();
+    expect(console.table).not.toHaveBeenCalled();
     rmdir('tmp');
   });
 
@@ -37,7 +37,7 @@ describe('index', () => {
       output: 'tmp'
     });
 
-    expect(console.table).toBeCalled();
+    expect(console.table).toHaveBeenCalled();
     rmdir('tmp');
   });
 
@@ -50,7 +50,7 @@ describe('index', () => {
       skipServices: true
     });
 
-    expect(console.table).toBeCalled();
+    expect(console.table).toHaveBeenCalled();
     rmdir('tmp');
   });
 

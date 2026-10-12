@@ -44,7 +44,7 @@ interface Property extends Type {
   description?: string;
   name: string;
   required: boolean;
-  example: string;
+  example?: string;
 }
 
 type AdditionalType = Generics & Type;

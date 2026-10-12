@@ -1,10 +1,10 @@
 import orderBy = require('lodash.orderby');
 import {resolve} from 'path';
-import {Spec} from 'swagger-schema-official';
+import { Path, Spec } from 'swagger-schema-official';
 import {Config} from './config';
 import {Enum} from './enums';
 import {
-  fetchServices,
+  fetchServices, Operation,
   Service
 } from './services';
 import {getData} from './utils';
@@ -1012,9 +1012,8 @@ describe('services', () => {
 
     singleService = [
       {
-        config,
         ...defaultService,
-        operations: orderBy(services.reduce((all, current) => all.concat(current.operations), []), 'name'),
+        operations: orderBy(services.reduce<Operation[]>((all, { operations }) => all.concat(operations), []), 'name'),
         references: {
           enum: [
             enumFindPetsByStatus
@@ -1051,21 +1050,30 @@ describe('services', () => {
     const pathName = Object.keys(spec.paths)[0];
     const operators = spec.paths[pathName];
     const methods = Object.keys(operators);
-    const firstIn = operators[methods[0]];
-    const secondIn = operators[methods[1]];
-    firstIn.parameters[0].type = 'string';
-    firstIn.parameters[0].enum = ['available', 'pending', 'sold'];
+    const firstIn = operators[methods[0] as keyof Path];
+    const secondIn = operators[methods[1] as keyof Path];
+    if (!firstIn || !secondIn || Array.isArray(firstIn) || Array.isArray(secondIn) || typeof firstIn === 'string' || typeof secondIn === 'string') {
+      throw new Error('Operator not found');
+    }
+    if (!firstIn.parameters || !Array.isArray(firstIn.parameters)) {
+      throw new Error('Parameters not found');
+    }
+
+    (firstIn.parameters[0] as any).type = 'string';
+    (firstIn.parameters[0] as any).enum = ['available', 'pending', 'sold'];
     firstIn.responses = {
       200: {
+        description: undefined as any,
         schema: {
           type: 'string',
           enum: ['available', 'pending', 'sold']
         }
       }
     };
-    delete firstIn.parameters[0].schema;
+    delete (firstIn.parameters[0] as any).schema;
     secondIn.responses = {
       default: {
+        description: undefined as any,
         schema: {
           type: 'string',
           items: {
@@ -1077,6 +1085,9 @@ describe('services', () => {
 
     const firstOut = petService.operations.find(operation => operation.name === firstIn.operationId);
     const secondOut = petService.operations.find(operation => operation.name === secondIn.operationId);
+    if (!firstOut || !secondOut) {
+      throw new Error('Operation not found');
+    }
     firstOut.parameters[0].type = enumFindPetsByStatus.name;
     firstOut.parameters[0].reference = enumFindPetsByStatus;
     firstOut.response.type = enumFindPetsByStatus.name;
@@ -1090,14 +1101,17 @@ describe('services', () => {
   it('extract references from parameters and responses', () => {
     const operators = spec.paths[Object.keys(spec.paths)[0]];
     const methods = Object.keys(operators);
-    const operator = operators[methods[0]];
-    operator.parameters.push(
+    const operator = operators[methods[0] as keyof Path];
+    if (!operator || Array.isArray(operator) || typeof operator === 'string') {
+      throw new Error('Operator not found');
+    }
+    operator.parameters?.push(
       {
         $ref: '#/definitions/User'
       },
       {
         name: 'foo',
-        schema: {}
+        in: 'body'
       }
     );
     operator.responses = {
@@ -1107,9 +1121,12 @@ describe('services', () => {
     };
 
     const operation = petService.operations.find(o => o.name === operator.operationId);
+    if (!operation) {
+      throw new Error('Operation not found');
+    }
     operation.parameters.unshift({
       description: undefined,
-      inBody: false,
+      inBody: true,
       inFormData: false,
       inHeader: false,
       inQuery: false,
@@ -1137,7 +1154,10 @@ describe('services', () => {
   it('generate default API service', () => {
     const pathName = Object.keys(spec.paths)[0];
     const operators = spec.paths[pathName];
-    const operator = operators[Object.keys(operators)[0]];
+    const operator = operators[Object.keys(operators)[0] as keyof Path];
+    if (!operator || Array.isArray(operator) || typeof operator === 'string') {
+      throw new Error('Operator not found');
+    }
     delete operator.tags;
     delete operator.parameters;
     delete operator.summary;

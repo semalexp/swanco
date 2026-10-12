@@ -41,21 +41,21 @@ describe('utils', () => {
   });
 
   it('should throw exception about invalid json data', async () => {
-    await expect(getData(resolve(__dirname, '../LICENSE'))).rejects.toThrowError();
+    await expect(getData(resolve(__dirname, '../LICENSE'))).rejects.toThrow();
   });
 
   it('should try to get file via http protocol', async () => {
-    await expect(getData('foo')).rejects.toThrowError();
+    await expect(getData('foo')).rejects.toThrow();
   });
 
   it('should do request to get a file via https', async () => {
     jest.mock('https');
-    await expect(getData('https://foo')).rejects.toThrowError();
+    await expect(getData('https://foo')).rejects.toThrow();
     jest.clearAllMocks();
   });
 
   it('should not generate a file without data', () => {
-    generate(output, null);
+    generate(output, null as any);
     expect(existsSync(resolve(output, dir.directory, `${file.file}.ts`))).toBeFalsy();
   });
 
@@ -124,14 +124,14 @@ describe('utils', () => {
   it('should show error message', () => {
     jest.spyOn(console, 'error').mockImplementation();
     showError('foo');
-    expect(console.error).toBeCalled();
+    expect(console.error).toHaveBeenCalled();
   });
 
   it('should show report', () => {
     jest.spyOn(console, 'info').mockImplementation();
     jest.spyOn(console, 'table').mockImplementation();
     showReport(0, 0, 0);
-    expect(console.table).toBeCalled();
+    expect(console.table).toHaveBeenCalled();
   });
 
 });

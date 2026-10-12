@@ -45,7 +45,7 @@ export interface Service extends Tag, File {
   config: Config;
 }
 
-interface Operation extends Generics {
+export interface Operation extends Generics {
   name: string;
   summary: string;
   description?: string;

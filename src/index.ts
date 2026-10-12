@@ -1,4 +1,4 @@
-import {fetchConfig} from './config';
+import { fetchConfig } from './config';
 import {
   Enum,
   fetchEnums
@@ -7,7 +7,7 @@ import {
   fetchModels,
   Model
 } from './models';
-import {fetchModule} from './module';
+import { fetchModule } from './module';
 import {
   fetchServices,
   Service
@@ -25,66 +25,61 @@ import {
 
 interface Options {
   input: string;
-  output: string;
+  output?: string;
   skipServices?: boolean;
   skipModule?: boolean;
   auth?: string;
   hideReport?: boolean;
 }
 
-export = (options: Options) => {
-  options = Object.assign<Partial<Options>, Options>({
-    output: 'src/app/api',
-    skipServices: false,
-    skipModule: false,
-    hideReport: false
-  }, options);
+export = async (options: Options) => {
+  const {input, auth, output = 'src/app/api', skipServices = false, skipModule = false, hideReport = false} = options;
 
-  if (!options.input) {
+  if (!input) {
     return Promise.reject(`Missing required argument: input`);
   }
 
-  return getData(options.input, options.auth).then(spec => {
-    const {swagger} = spec;
+  const spec = await getData(input, auth);
+  const {swagger} = spec;
 
-    if (parseInt(swagger, 0) !== 2) {
-      throw new Error(`Invalid Swagger data or version of specification is not supported`);
-    }
+  if (parseInt(swagger, 0) !== 2) {
+    throw new Error(`Invalid Swagger data or version of specification is not supported`);
+  }
 
-    rmdir(options.output);
+  rmdir(output);
 
-    const root: Directory<File> = {
-      directory: '.',
-      content: []
+  const root: Directory<File> = {
+    directory: '.',
+    content: []
+  };
+
+  const models = wrap<Model>(fetchModels(spec), 'models');
+
+  if (!skipServices) {
+    const variables: File = {
+      name: 'Variables',
+      file: 'variables',
+      template: 'variables'
     };
-    const models = wrap<Model>(fetchModels(spec), 'models');
+    const config = fetchConfig(spec, getProtocol(input));
+    const services = fetchServices(spec, config);
+    const enums = wrap<Enum>(fetchEnums(), 'enums');
 
-    if (!options.skipServices) {
-      const variables: File = {
-        name: 'Variables',
-        file: 'variables',
-        template: 'variables'
-      };
-      const config = fetchConfig(spec, getProtocol(options.input));
-      const services = fetchServices(spec, config);
-      const enums = wrap<Enum>(fetchEnums(), 'enums');
-
-      if (!options.skipModule) {
-        root.content.push(fetchModule(config, services));
-      }
-
-      root.content.push(config, variables, wrap<Service>(services, 'services'), models, enums);
-      if (!options.hideReport) {
-        showReport(models.content.length, enums.content.length, services.length);
-      }
-    } else {
-      const enums = wrap<Enum>(fetchEnums(), 'enums');
-      root.content.push(models, enums);
-      if (!options.hideReport) {
-        showReport(models.content.length, enums.content.length, 0);
-      }
+    if (!skipModule) {
+      root.content.push(fetchModule(config, services));
     }
 
-    generate(options.output, root);
-  });
+    root.content.push(config, variables, wrap<Service>(services, 'services'), models, enums);
+    if (!hideReport) {
+      showReport(models.content.length, enums.content.length, services.length);
+    }
+  } else {
+    const enums_1 = wrap<Enum>(fetchEnums(), 'enums');
+    root.content.push(models, enums_1);
+    if (!hideReport) {
+      showReport(models.content.length, enums_1.content.length, 0);
+    }
+  }
+
+  generate(output, root);
 };
