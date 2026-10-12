@@ -1,5 +1,6 @@
 # swanco
 
+[![CI & Documentation](https://github.com/semalexp/swanco/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/semalexp/swanco/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/swanco.svg?label=npm%20package)](https://www.npmjs.com/package/swanco)
 [![node](https://img.shields.io/node/v/swanco.svg?label=require%20node)](https://nodejs.org)
 [![License](https://img.shields.io/npm/l/swanco.svg)](/LICENSE)
