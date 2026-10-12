@@ -2,9 +2,9 @@
  * @module Services
  */
 
-import camelCase = require('lodash.camelcase');
-import kebabCase = require('lodash.kebabcase');
-import orderBy = require('lodash.orderby');
+import camelCase from 'lodash.camelcase';
+import kebabCase from 'lodash.kebabcase';
+import orderBy from 'lodash.orderby';
 
 import {
   Operation as SwaggerOperation,

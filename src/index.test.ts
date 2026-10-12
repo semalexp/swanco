@@ -1,4 +1,4 @@
-import swanco = require('./index');
+import swanco from './index';
 import {existsSync} from 'fs';
 import {rmdir} from './utils';
 

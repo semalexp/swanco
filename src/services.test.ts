@@ -1,4 +1,4 @@
-import orderBy = require('lodash.orderby');
+import orderBy from 'lodash.orderby';
 import {resolve} from 'path';
 import { Path, Spec } from 'swagger-schema-official';
 import {Config} from './config';

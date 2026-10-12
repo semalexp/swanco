@@ -2,9 +2,9 @@
  * @module Models
  */
 
-import kebabCase = require('lodash.kebabcase');
-import orderBy = require('lodash.orderby');
-import uniqBy = require('lodash.uniqby');
+import kebabCase from 'lodash.kebabcase';
+import orderBy from 'lodash.orderby';
+import uniqBy from 'lodash.uniqby';
 import {
   Schema,
   Spec

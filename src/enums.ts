@@ -2,8 +2,8 @@
  * @module Enum
  */
 
-import isEqual = require('lodash.isequal');
-import kebabCase = require('lodash.kebabcase');
+import isEqual from 'lodash.isequal';
+import kebabCase from 'lodash.kebabcase';
 import {BaseSchema} from 'swagger-schema-official';
 import {
   File,

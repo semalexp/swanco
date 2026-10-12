@@ -2,9 +2,9 @@
  * @module Type
  */
 
-import groupBy = require('lodash.groupby');
-import orderBy = require('lodash.orderby');
-import uniqBy = require('lodash.uniqby');
+import groupBy from 'lodash.groupby';
+import orderBy from 'lodash.orderby';
+import uniqBy from 'lodash.uniqby';
 import {
   BaseSchema,
   Schema

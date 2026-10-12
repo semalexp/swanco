@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import swanco = require('./index');
 import {showError} from './utils';
+import swanco from './index';
 
 const program = new Command();
 

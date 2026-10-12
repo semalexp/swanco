@@ -14,8 +14,8 @@ import {
 } from 'fs';
 import * as Handlebars from 'handlebars';
 import {IncomingMessage} from 'http';
-import camelCase = require('lodash.camelcase');
-import upperFirst = require('lodash.upperfirst');
+import camelCase from 'lodash.camelcase';
+import upperFirst from 'lodash.upperfirst';
 import {
   isAbsolute,
   join,
@@ -184,8 +184,8 @@ export async function getData(path: string, auth?: string): Promise<Spec> {
 
   try {
     data = JSON.parse(data);
-  } catch (e) {
-    throw new Error(`Cannot parse data from ${path}`);
+  } catch (cause) {
+    throw new Error(`Cannot parse data from ${path}`, { cause });
   }
 
   return data;
@@ -204,7 +204,9 @@ export function getProtocol(url: string): string | undefined {
   try {
     protocol = new URL(url).protocol;
     protocol = protocol.substring(0, protocol.length - 1);
-  } catch (e) {}
+  } catch (cause) {
+    throw new Error(`Cannot get protocol from ${url}`, { cause });
+  }
 
   return protocol;
 }
