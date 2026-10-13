@@ -8,14 +8,13 @@
     "node": ">=10.12.0"
   },
   "scripts": {
-    "build": "tsc",
     "start": "tsc -w",
-    "doc": "typedoc './src/!(*.test).ts' --out doc",
+    "build": "tsc",
     "lint": "eslint ./src",
     "test": "jest --config jest.config.json",
-    "generate": "node ./dist/cli -o tmp -i",
-    "release": "npm run build && npm run test && npm run lint && standard-version",
-    "publish": "git push --follow-tags origin master && npm publish"
+    "doc": "typedoc './src/!(*.test).ts' --out doc",
+    "release": "standard-version",
+    "generate": "node ./dist/cli -o tmp -i"
   },
   "keywords": [
     "swagger",
